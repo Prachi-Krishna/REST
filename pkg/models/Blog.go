@@ -11,3 +11,9 @@ type Blog struct {
 	Content   string `gorm:"type:text"`
 	CreatedAt time.Time
 }
+
+type Config struct {
+	Service string
+	Port    string
+	Db      string
+}

@@ -14,6 +14,8 @@ type Handler interface {
 	GetBlogById(c echo.Context) error
 	DeleteBlog(c echo.Context) error
 	GetAllBlogs(c echo.Context) error
+	GetConfigByService(c echo.Context) error
+	UpdatConfig(c echo.Context) error
 }
 
 type handler struct {
@@ -62,6 +64,24 @@ func (h *handler) UpdateBlog(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+func (h *handler) UpdatConfig(c echo.Context) error {
+	req := UpdateConfigRequest{}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, CreateErrorResponse(goerrors.New(err)))
+	}
+
+	if err := c.Validate(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, CreateErrorResponse(goerrors.New(err)))
+	}
+
+	err := h.service.UpdateConfig(&req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, CreateErrorResponse(err))
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
 func (h *handler) DeleteBlog(c echo.Context) error {
 	request := &DeleteBlogRequest{}
 	if err := c.Bind(request); err != nil {
@@ -94,6 +114,17 @@ func (h *handler) GetBlogById(c echo.Context) error {
 
 	blog_id, err := strconv.ParseUint(c.QueryParam("id"), 10, 64)
 	resp, err := h.service.GetBlogById(blog_id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, CreateErrorResponse(err))
+	}
+
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *handler) GetConfigByService(c echo.Context) error {
+
+	service := c.QueryParam("service")
+	resp, err := h.service.GetConfigByService(service)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, CreateErrorResponse(err))
 	}

@@ -14,6 +14,8 @@ type Repository interface {
 	DeleteBlog(id uint64, title string) error
 	GetBlogById(id uint64) (blog *models.Blog, err error)
 	GetAllBlogs() (blogs []models.Blog, err error)
+	GetConfigByService(service string) (config *models.Config, err error)
+	UpdateConfig(port, db string) error
 }
 
 type repository struct {
@@ -24,6 +26,24 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repository{
 		db: db,
 	}
+}
+
+func (r *repository) GetConfigByService(service string) (config *models.Config, err error) {
+	err = r.db.Find(&config, "service=?", service).Error
+	if err != nil {
+		return nil, goerrors.New(err)
+	}
+
+	return
+}
+
+func (r *repository) UpdateConfig(port, service string) error {
+	err := r.db.Model(&models.Config{}).Where("service", service).Update("port", port).Error
+	if err != nil {
+		return goerrors.New(err)
+	}
+
+	return nil
 }
 
 func (r *repository) CreateBlog(blog *models.Blog) error {

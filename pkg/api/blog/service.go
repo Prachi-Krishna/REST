@@ -11,6 +11,8 @@ type Service interface {
 	DeleteBlog(req *DeleteBlogRequest) error
 	GetBlogById(id uint64) (*models.Blog, error)
 	GetAllBlogs() ([]models.Blog, error)
+	GetConfigByService(service string) (*models.Config, error)
+	UpdateConfig(req *UpdateConfigRequest) error
 }
 
 type service struct {
@@ -21,6 +23,19 @@ func NewService(repository Repository) Service {
 	return &service{
 		repository: repository,
 	}
+}
+
+func (s *service) GetConfigByService(service string) (*models.Config, error) {
+	return s.repository.GetConfigByService(service)
+}
+
+func (s *service) UpdateConfig(req *UpdateConfigRequest) error {
+	err := s.repository.UpdateConfig(req.Port, req.Service)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *service) CreateBlog(req *CreateBlogRequest) error {

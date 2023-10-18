@@ -37,6 +37,8 @@ func Setup(dbHandler *gorm.DB) {
 	e.DELETE("/delete-blog", blogHandler.DeleteBlog)
 	e.GET("/blog", blogHandler.GetBlogById)
 	e.GET("/blogs", blogHandler.GetAllBlogs)
+	e.GET("/config", blogHandler.GetConfigByService)
+	e.POST("/update", blogHandler.UpdatConfig)
 
 	e.Start(viper.GetString("server.port"))
 }

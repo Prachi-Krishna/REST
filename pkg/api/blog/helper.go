@@ -11,6 +11,11 @@ type UpdateBlogRequest struct {
 	BlogTitle string
 }
 
+type UpdateConfigRequest struct {
+	Port    string
+	Service string
+}
+
 type DeleteBlogRequest struct {
 	BlogId    uint64
 	BlogTitle string
